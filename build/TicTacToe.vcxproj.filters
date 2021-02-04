@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="windows">
+      <UniqueIdentifier>{1ca754b8-4f36-4131-9667-8c7a17cd3419}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\TicTacToe\windows\main_window.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TicTacToe\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\TicTacToe\windows\main_window.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
