@@ -9,14 +9,12 @@ void GameLogic::makeMove( unsigned id )
    if ( checkWin( m_moves, L'X' ) )
    {
       m_currentStatus = EGameStatus::eGS_PlayerWin;
-      m_round += 1;
-      m_wins += 1;
+      m_statistics.emplace_back( EGameStatus::eGS_PlayerWin );
    }
    else if ( checkDraw( m_moves ) )
    {
       m_currentStatus = EGameStatus::eGS_Draw;
-      m_round += 1;
-      m_draws += 1;
+      m_statistics.emplace_back( EGameStatus::eGS_Draw );
    }
 }
 
@@ -72,14 +70,6 @@ wstring GameLogic::getGameStatusString()
    }
 }
 
-wstring GameLogic::getGameStatisticString()
-{
-   return L"Round "    + std::to_wstring( m_round ) +
-          L"\nWins: "  + std::to_wstring( m_wins ) + 
-          L"\nLoses: " + std::to_wstring( m_loses ) + 
-          L"\nDraws: " + std::to_wstring( m_draws );
-}
-
 void GameLogic::startNewGame()
 {
    m_moves.fill( L' ' );
@@ -94,14 +84,12 @@ unsigned GameLogic::makeAIMove()
    if ( checkWin( m_moves, L'O' ) )
    {
       m_currentStatus = EGameStatus::eGS_PlayerLose;
-      m_round += 1;
-      m_loses += 1;
+      m_statistics.emplace_back( EGameStatus::eGS_PlayerLose );
    }
    else if ( checkDraw( m_moves ) )
    {
       m_currentStatus = EGameStatus::eGS_Draw;
-      m_round += 1;
-      m_draws += 1;
+      m_statistics.emplace_back( EGameStatus::eGS_Draw );
    }
 
    return temp.zone;

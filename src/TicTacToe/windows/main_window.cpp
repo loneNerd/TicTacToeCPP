@@ -269,7 +269,31 @@ void MainWindow::makeMove( unsigned id )
    }
 
    MessageBox( m_windowHandler, m_gameLogic.getGameStatusString().c_str(),    L"Game Over", MB_OK );
-   MessageBox( m_windowHandler, m_gameLogic.getGameStatisticString().c_str(), L"Statistic", MB_OK );
+
+   wstring temp{ L"Rounds: " };
+   unsigned draws = 0;
+   unsigned wins = 0;
+   unsigned lose = 0;
+
+   for ( const auto& elem : m_gameLogic.getGameStatistics() )
+   {
+      if ( elem == EGameStatus::eGS_PlayerWin )
+         wins += 1;
+      else if ( elem == EGameStatus::eGS_PlayerLose )
+         lose += 1;
+      else if ( elem == EGameStatus::eGS_Draw )
+         draws += 1;
+   }
+
+   temp += std::to_wstring( m_gameLogic.getGameStatistics().size() );
+   temp += L"\nWins: ";
+   temp += std::to_wstring( wins );
+   temp += L"\nLoses: ";
+   temp += std::to_wstring( lose );
+   temp += L"\nDraws: ";
+   temp += std::to_wstring( draws );
+
+   MessageBox( m_windowHandler, temp.c_str(), L"Statistic", MB_OK );
 
    for ( const auto& elem : m_playButtons )
    {

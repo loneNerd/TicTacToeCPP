@@ -23,11 +23,7 @@ namespace GameLogicLibrary
    class __declspec(dllexport) GameLogic
    {
    public:
-      GameLogic() : m_currentStatus{ EGameStatus::eGS_GameContinue }, 
-                    m_round{ 0 }, 
-                    m_wins{ 0 }, 
-                    m_loses{ 0 }, 
-                    m_draws{ 0 } { m_moves.fill( L' ' ); }
+      GameLogic() : m_currentStatus{ EGameStatus::eGS_GameContinue } { m_moves.fill( L' ' ); }
 
       GameLogic( const GameLogic& other )            = delete;
       GameLogic( GameLogic&& other )                 = delete;
@@ -37,11 +33,11 @@ namespace GameLogicLibrary
       ~GameLogic() {}
 
       EGameStatus getGameStatus() { return m_currentStatus; }
+      vector< EGameStatus >& getGameStatistics() { return m_statistics; }
 
       unsigned makeAIMove();
       void makeMove( unsigned id );
       wstring getGameStatusString();
-      wstring getGameStatisticString();
       void startNewGame();
    
    private:
@@ -61,13 +57,9 @@ namespace GameLogicLibrary
       bool checkWin( array< wchar_t, 9 >& playField, wchar_t symbol );
       bool checkDraw( array< wchar_t, 9 >& playField );
 
-      array< wchar_t, 9 > m_moves;
-
-      EGameStatus m_currentStatus;
-      unsigned    m_round;
-      unsigned    m_wins;
-      unsigned    m_loses;
-      unsigned    m_draws;
+      array< wchar_t, 9 >   m_moves;
+      vector< EGameStatus > m_statistics;
+      EGameStatus           m_currentStatus;
    };
 }
 

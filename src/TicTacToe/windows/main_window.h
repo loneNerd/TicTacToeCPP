@@ -18,6 +18,7 @@ namespace Windows
 {
    using std::thread;
    using std::vector;
+   using std::wstring;
    using GameLogicLibrary::GameLogic;
    using GameLogicLibrary::EGameStatus;
 
@@ -47,14 +48,14 @@ namespace Windows
       static LRESULT CALLBACK s_processes( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
       void makeMove( unsigned id );
 
-      WNDCLASSEXW      m_windowClass;
-      HWND             m_windowHandler;
-      HFONT            m_font;
-      vector< HWND >   m_playButtons;
-      HWND             m_gameStatus;
-      HWND             m_infoButton;
-      GameLogic        m_gameLogic;
-      bool             m_isMoveEnable;
+      WNDCLASSEXW    m_windowClass;
+      HWND           m_windowHandler;
+      HFONT          m_font;
+      vector< HWND > m_playButtons;
+      HWND           m_gameStatus;
+      HWND           m_infoButton;
+      GameLogic      m_gameLogic;
+      bool           m_isMoveEnable;
    };
 }
 
