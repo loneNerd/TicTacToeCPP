@@ -31,7 +31,8 @@ namespace Windows
       eWEID_PlayButton6ID = 5,
       eWEID_PlayButton7ID = 6,
       eWEID_PlayButton8ID = 7,
-      eWEID_PlayButton9ID = 8
+      eWEID_PlayButton9ID = 8,
+      eWEID_InfoButtonID  = 10
    };
 
    class MainWindow
@@ -51,6 +52,7 @@ namespace Windows
       HFONT            m_font;
       vector< HWND >   m_playButtons;
       HWND             m_gameStatus;
+      HWND             m_infoButton;
       GameLogic        m_gameLogic;
       bool             m_isMoveEnable;
    };

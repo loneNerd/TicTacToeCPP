@@ -71,4 +71,7 @@ namespace GameLogicLibrary
    };
 }
 
+extern "C" __declspec(dllexport) const char* getInfo();
+__declspec(dllexport) std::vector<int> getVersion();
+
 #endif // GAME_LOGIC_H_

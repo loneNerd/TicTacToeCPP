@@ -30,9 +30,18 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow ) :
    m_gameStatus = CreateWindow( WC_STATIC,
                                 L"Your Move", 
                                 WS_CHILD | WS_VISIBLE,
-                                10, 10, 75, 20, 
+                                20, 10, 75, 20, 
                                 m_windowHandler,
                                 nullptr,
+                                hInstance,
+                                this );
+
+   m_infoButton = CreateWindow( WC_BUTTON,
+                                L"Info",
+                                WS_CHILD | WS_VISIBLE,
+                                430, 10, 50, 20,
+                                m_windowHandler,
+                                ( HMENU )eWEID_InfoButtonID,
                                 hInstance,
                                 this );
 
@@ -141,6 +150,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow ) :
 MainWindow::~MainWindow()
 {
    DestroyWindow( m_windowHandler );
+   DestroyWindow( m_infoButton );
 
    for ( HWND button : m_playButtons )
    {
@@ -198,9 +208,25 @@ LRESULT CALLBACK MainWindow::processes( HWND hWnd, UINT message, WPARAM wParam, 
             {
                if ( m_isMoveEnable )
                {
-                  thread temp(&MainWindow::makeMove, this, LOWORD(wParam));
+                  thread temp( &MainWindow::makeMove, this, LOWORD( wParam ) );
                   temp.detach();
                }
+               break;
+            }
+            case eWEID_InfoButtonID:
+            {
+               std::string temp{ "Status: " };
+               temp += getInfo();
+               temp += "\nVersion: ";
+
+               for (const auto& elem : getVersion())
+               {
+                  temp += std::to_string(elem);
+                  temp += ".";
+               }
+
+               MessageBoxA( m_windowHandler, temp.c_str(), "Info", MB_OK );
+
                break;
             }
          }

@@ -148,3 +148,14 @@ GameLogic::ZonePoints GameLogic::checkZonePoints( array< wchar_t, 9 >& playField
 
    return bestZone;
 }
+
+extern "C" __declspec(dllexport) const char* getInfo()
+{
+   return "Game Library";
+}
+
+__declspec(dllexport) vector<int> getVersion()
+{
+   vector< int > temp{ 1, 0, 0, 0 };
+   return temp;
+}
