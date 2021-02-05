@@ -2,7 +2,8 @@
 
 using namespace Windows;
 
-MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
+MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow ) :
+   m_isMoveEnable { true }
 {
    m_windowClass.cbSize        = sizeof( WNDCLASSEX );
    m_windowClass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -16,8 +17,8 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
 
    m_windowHandler = CreateWindow( L"Main Window", 
                                    L"TicTacToe", 
-                                   WS_OVERLAPPEDWINDOW,
-                                   CW_USEDEFAULT, 0, 510, 530, 
+                                   WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                                   CW_USEDEFAULT, 0, 510, 570, 
                                    nullptr, 
                                    nullptr, 
                                    hInstance, 
@@ -26,10 +27,19 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    ShowWindow( m_windowHandler, nCmdShow );
    UpdateWindow( m_windowHandler );
 
+   m_gameStatus = CreateWindow( WC_STATIC,
+                                L"Your Move", 
+                                WS_CHILD | WS_VISIBLE,
+                                10, 10, 75, 20, 
+                                m_windowHandler,
+                                nullptr,
+                                hInstance,
+                                this );
+
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             10, 10, 150, 150,
+                                             10, 40, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton1ID,
                                              hInstance,
@@ -50,7 +60,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             170, 10, 150, 150,
+                                             170, 40, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton2ID,
                                              hInstance,
@@ -60,7 +70,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             330, 10, 150, 150,
+                                             330, 40, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton3ID,
                                              hInstance,
@@ -70,7 +80,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             10, 170, 150, 150,
+                                             10, 200, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton4ID,
                                              hInstance,
@@ -80,7 +90,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             170, 170, 150, 150,
+                                             170, 200, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton5ID,
                                              hInstance,
@@ -90,7 +100,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             330, 170, 150, 150,
+                                             330, 200, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton6ID,
                                              hInstance,
@@ -100,7 +110,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             10, 330, 150, 150,
+                                             10, 360, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton7ID,
                                              hInstance,
@@ -110,7 +120,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             170, 330, 150, 150,
+                                             170, 360, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton8ID,
                                              hInstance,
@@ -120,7 +130,7 @@ MainWindow::MainWindow( HINSTANCE hInstance, int nCmdShow )
    m_playButtons.emplace_back( CreateWindow( WC_BUTTON,
                                              L"",
                                              WS_CHILD | WS_VISIBLE,
-                                             330, 330, 150, 150,
+                                             330, 360, 150, 150,
                                              m_windowHandler,
                                              ( HMENU )eWEID_PlayButton9ID,
                                              hInstance,
@@ -186,31 +196,11 @@ LRESULT CALLBACK MainWindow::processes( HWND hWnd, UINT message, WPARAM wParam, 
             case eWEID_PlayButton8ID:
             case eWEID_PlayButton9ID:
             {
-               SendMessage( m_playButtons[ LOWORD( wParam ) ], WM_SETTEXT, 0, ( LPARAM )L"X" );
-               EnableWindow( m_playButtons[ LOWORD( wParam ) ], FALSE );
-               m_gameLogic.makeMove( LOWORD( wParam ) );
-
-               if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_GameContinue )
+               if ( m_isMoveEnable )
                {
-                  unsigned temp = m_gameLogic.makeAIMove();
-                  SendMessage( m_playButtons[ temp ], WM_SETTEXT, 0, ( LPARAM )L"O" );
-                  EnableWindow( m_playButtons[ temp ], FALSE);
-
-                  if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_GameContinue )
-                     break;
+                  thread temp(&MainWindow::makeMove, this, LOWORD(wParam));
+                  temp.detach();
                }
-
-               MessageBox( m_windowHandler, m_gameLogic.getGameStatusString().c_str(), L"Game Over", MB_OK );
-               MessageBox( m_windowHandler, m_gameLogic.getGameStatisticString().c_str(), L"Statistic", MB_OK );
-
-               for ( const auto& elem : m_playButtons )
-               {
-                  SendMessage( elem, WM_SETTEXT, 0, ( LPARAM )L"" );
-                  EnableWindow( elem, TRUE );
-               }
-
-               m_gameLogic.startNewGame();
-
                break;
             }
          }
@@ -225,4 +215,43 @@ LRESULT CALLBACK MainWindow::processes( HWND hWnd, UINT message, WPARAM wParam, 
    }
 
    return DefWindowProc( hWnd, message, wParam, lParam );
+}
+
+void MainWindow::makeMove( unsigned id )
+{
+   m_isMoveEnable = false;
+
+   SendMessage( m_playButtons[ id ], WM_SETTEXT, 0, ( LPARAM )L"X" );
+   EnableWindow( m_playButtons[ id ], FALSE );
+   m_gameLogic.makeMove( id );
+
+   if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_GameContinue )
+   {
+      SendMessage( m_gameStatus, WM_SETTEXT, 0, ( LPARAM )L"AI Thinking" );
+
+      Sleep( 2000 );
+
+      unsigned temp = m_gameLogic.makeAIMove();
+      SendMessage( m_playButtons[ temp ], WM_SETTEXT, 0, ( LPARAM )L"O" );
+      EnableWindow( m_playButtons[ temp ], FALSE );
+
+      SendMessage( m_gameStatus, WM_SETTEXT, 0, ( LPARAM )L"Your Move" );
+      m_isMoveEnable = true;
+
+      if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_GameContinue )
+         return;
+   }
+
+   MessageBox( m_windowHandler, m_gameLogic.getGameStatusString().c_str(),    L"Game Over", MB_OK );
+   MessageBox( m_windowHandler, m_gameLogic.getGameStatisticString().c_str(), L"Statistic", MB_OK );
+
+   for ( const auto& elem : m_playButtons )
+   {
+      SendMessage( elem, WM_SETTEXT, 0, ( LPARAM )L"" );
+      EnableWindow( elem, TRUE);
+   }
+
+   m_gameLogic.startNewGame();
+
+   m_isMoveEnable = true;
 }

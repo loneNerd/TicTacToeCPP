@@ -2,6 +2,7 @@
 #ifndef WINDOWS_MAIN_WINDOW_H_
 #define WINDOWS_MAIN_WINDOW_H_
 
+#include <thread>
 #include <string>
 #include <vector>
 #include <windows.h>
@@ -15,6 +16,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 namespace Windows
 {
+   using std::thread;
    using std::vector;
    using GameLogicLibrary::GameLogic;
    using GameLogicLibrary::EGameStatus;
@@ -42,12 +44,15 @@ namespace Windows
 
    private:
       static LRESULT CALLBACK s_processes( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+      void makeMove( unsigned id );
 
-      WNDCLASSEXW    m_windowClass;
-      HWND           m_windowHandler;
-      HFONT          m_font;
-      vector< HWND > m_playButtons;
-      GameLogic      m_gameLogic;
+      WNDCLASSEXW      m_windowClass;
+      HWND             m_windowHandler;
+      HFONT            m_font;
+      vector< HWND >   m_playButtons;
+      HWND             m_gameStatus;
+      GameLogic        m_gameLogic;
+      bool             m_isMoveEnable;
    };
 }
 
