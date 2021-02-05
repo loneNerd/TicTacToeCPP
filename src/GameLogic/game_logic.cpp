@@ -5,19 +5,19 @@ using namespace GameLogicLibrary;
 void GameLogic::makeMove( unsigned id )
 {
    m_moves.at( id ) = L'X';
-}
 
-EGameStatus GameLogic::getGameStatus()
-{
    if ( checkWin( m_moves, L'X' ) )
-      return EGameStatus::eGS_XWin;
-   else if ( checkWin( m_moves, L'O' ) )
-      return EGameStatus::eGS_OWin;
-
-   if ( checkDraw( m_moves ) )
-      return EGameStatus::eGS_Draw;
-
-   return EGameStatus::eGS_GameContinue;
+   {
+      m_currentStatus = EGameStatus::eGS_PlayerWin;
+      m_round += 1;
+      m_wins += 1;
+   }
+   else if ( checkDraw( m_moves ) )
+   {
+      m_currentStatus = EGameStatus::eGS_Draw;
+      m_round += 1;
+      m_draws += 1;
+   }
 }
 
 bool GameLogic::checkWin( array< wchar_t, 9 >& playField, wchar_t symbol )
@@ -50,14 +50,13 @@ bool GameLogic::checkDraw( array< wchar_t, 9 >& playField )
 
 wstring GameLogic::getGameStatusString()
 {
-
-   switch ( getGameStatus() )
+   switch ( m_currentStatus )
    {
-      case EGameStatus::eGS_XWin:
+      case EGameStatus::eGS_PlayerWin:
       {
          return L"You Win";
       }
-      case EGameStatus::eGS_OWin:
+      case EGameStatus::eGS_PlayerLose:
       {
          return L"You lose";
       }
@@ -73,15 +72,38 @@ wstring GameLogic::getGameStatusString()
    }
 }
 
+wstring GameLogic::getGameStatisticString()
+{
+   return L"Round "    + std::to_wstring( m_round ) +
+          L"\nWins: "  + std::to_wstring( m_wins ) + 
+          L"\nLoses: " + std::to_wstring( m_loses ) + 
+          L"\nDraws: " + std::to_wstring( m_draws );
+}
+
 void GameLogic::startNewGame()
 {
    m_moves.fill( L' ' );
+   m_currentStatus = EGameStatus::eGS_GameContinue;
 }
 
 unsigned GameLogic::makeAIMove()
 {
    ZonePoints temp = checkZonePoints( m_moves, L'O', 0 ).zone;
    m_moves.at( temp.zone ) = L'O';
+
+   if ( checkWin( m_moves, L'O' ) )
+   {
+      m_currentStatus = EGameStatus::eGS_PlayerLose;
+      m_round += 1;
+      m_loses += 1;
+   }
+   else if ( checkDraw( m_moves ) )
+   {
+      m_currentStatus = EGameStatus::eGS_Draw;
+      m_round += 1;
+      m_draws += 1;
+   }
+
    return temp.zone;
 }
 

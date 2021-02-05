@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\GameLogic\game_logic.cpp" />
+    <ClInclude Include="..\src\GameLogic\game_logic.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\GameLogic\game_logic.h" />
+    <ClCompile Include="..\src\GameLogic\game_logic.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

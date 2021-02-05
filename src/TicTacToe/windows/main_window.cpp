@@ -201,6 +201,7 @@ LRESULT CALLBACK MainWindow::processes( HWND hWnd, UINT message, WPARAM wParam, 
                }
 
                MessageBox( m_windowHandler, m_gameLogic.getGameStatusString().c_str(), L"Game Over", MB_OK );
+               MessageBox( m_windowHandler, m_gameLogic.getGameStatisticString().c_str(), L"Statistic", MB_OK );
 
                for ( const auto& elem : m_playButtons )
                {
