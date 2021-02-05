@@ -186,27 +186,21 @@ LRESULT CALLBACK MainWindow::processes( HWND hWnd, UINT message, WPARAM wParam, 
             case eWEID_PlayButton8ID:
             case eWEID_PlayButton9ID:
             {
-               SendMessage( m_playButtons[ LOWORD( wParam ) ], WM_SETTEXT, 0, ( LPARAM )m_gameLogic.getCurrentFigure().c_str() );
+               SendMessage( m_playButtons[ LOWORD( wParam ) ], WM_SETTEXT, 0, ( LPARAM )L"X" );
                EnableWindow( m_playButtons[ LOWORD( wParam ) ], FALSE );
                m_gameLogic.makeMove( LOWORD( wParam ) );
 
                if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_GameContinue )
                {
-                  break;
+                  unsigned temp = m_gameLogic.makeAIMove();
+                  SendMessage( m_playButtons[ temp ], WM_SETTEXT, 0, ( LPARAM )L"O" );
+                  EnableWindow( m_playButtons[ temp ], FALSE);
+
+                  if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_GameContinue )
+                     break;
                }
 
-               if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_Draw )
-               {
-                  MessageBox( m_windowHandler, L"Draw", L"Game Over", MB_OK );
-               }
-               else if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_OWin )
-               {
-                  MessageBox( m_windowHandler, L"O Win", L"Game Over", MB_OK );
-               }
-               else if ( m_gameLogic.getGameStatus() == EGameStatus::eGS_XWin )
-               {
-                  MessageBox( m_windowHandler, L"X Win", L"Game Over", MB_OK );
-               }
+               MessageBox( m_windowHandler, m_gameLogic.getGameStatusString().c_str(), L"Game Over", MB_OK );
 
                for ( const auto& elem : m_playButtons )
                {

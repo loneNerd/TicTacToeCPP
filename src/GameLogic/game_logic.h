@@ -4,10 +4,13 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 namespace GameLogicLibrary
 {
    using std::array;
+   using std::wstring;
+   using std::vector;
 
    enum class EGameStatus
    {
@@ -20,14 +23,38 @@ namespace GameLogicLibrary
    class __declspec(dllexport) GameLogic
    {
    public:
+      GameLogic() { m_moves.fill(L' '); }
+
+      GameLogic( const GameLogic& other )            = delete;
+      GameLogic( GameLogic&& other )                 = delete;
+      GameLogic& operator=( const GameLogic& other ) = delete;
+      GameLogic& operator=( GameLogic&& other )      = delete;
+
+      ~GameLogic() {}
+      unsigned makeAIMove();
       void makeMove( unsigned id );
-      std::wstring& getCurrentFigure() { return m_currentFigure; }
       EGameStatus getGameStatus();
+      wstring getGameStatusString();
       void startNewGame();
    
    private:
-      array< wchar_t, 9 > m_moves{ L' ', L' ', L' ', L' ', L' ', L' ', L' ', L' ', L' ' };
-      std::wstring m_currentFigure{ L"X" };
+      struct ZonePoints
+      {
+         ZonePoints( int zone )
+         {
+            this->zone = zone;
+            points = 0;
+         }
+         int zone;
+         int points;
+      };
+
+      vector< ZonePoints > getEmptyIndexes( array< wchar_t, 9 > zones );
+      ZonePoints checkZonePoints( array< wchar_t, 9 >& playField, wchar_t symbol, int depthLevel );
+      bool checkWin( array< wchar_t, 9 >& playField, wchar_t symbol );
+      bool checkDraw( array< wchar_t, 9 >& playField );
+
+      array< wchar_t, 9 > m_moves;
    };
 }
 
